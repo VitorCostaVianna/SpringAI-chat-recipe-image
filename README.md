@@ -3,7 +3,7 @@
 ## Overview
 
 SpringAI-Chat-Recipe-Image is a full-stack web application that demonstrates how to integrate Spring AI (for OpenAI APIs) with a modern React frontend. It offers three AI-powered features: a chat interface for natural language Q&A, a recipe generator that creates cooking recipes from user prompts, using prompt teamplaten, and an image generator that creates images from text descriptions.The backend is built with Spring Boot (providing a scalable, production-ready API layer) and uses the Spring AI library for seamless OpenAI integration. The frontend is built with React.js + Vite, delivering a responsive and interactive user interface. 
- This README follows best practices by including a project overview, setup instructions, API documentation, and a roadmap
+ This README follows best practices by including a project overview,API documentation, Acknowledgements and a roadmap
 
 
 
@@ -76,6 +76,17 @@ To run this project, you will need to add the following environment variables to
 - **Axios** — for handling HTTP requests between the React frontend and Spring Boot backend
 
 - All the amazing developers and open-source contributors whose tools and libraries made this project possible
+
+## Roadmap
+
+ - Add multi-turn chat support (keep chat history)
+
+ - Improve UI with new design and dark mode
+
+ - Dockerize and deploy the application
+
+ - Implement user authentication
+
 
 
 ## License
