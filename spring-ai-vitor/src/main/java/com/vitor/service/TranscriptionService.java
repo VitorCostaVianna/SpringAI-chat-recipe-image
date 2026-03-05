@@ -18,39 +18,38 @@ import com.vitor.dto.TranscriptionResponseDto;
 
 @Service
 public class TranscriptionService {
-    
+
     private static final Logger log = LoggerFactory.getLogger(TranscriptionService.class);
-    
+
     private final OpenAiAudioTranscriptionModel transcriptionModel;
-    
-    public TranscriptionService(@Value("${spring.ai.openai.api-key}") String apiKey) {
-        OpenAiAudioApi openAiAudioApi = OpenAiAudioApi.builder()
-                .apiKey(apiKey)    
+
+    public TranscriptionService(@Value("${groq.api-key}") String apiKey) {
+        // Groq provides an OpenAI-compatible audio API — just point to their base URL
+        OpenAiAudioApi groqAudioApi = OpenAiAudioApi.builder()
+                .apiKey(apiKey)
+                .baseUrl("https://api.groq.com/openai/v1")
                 .build();
-        this.transcriptionModel = new OpenAiAudioTranscriptionModel(openAiAudioApi);
+        this.transcriptionModel = new OpenAiAudioTranscriptionModel(groqAudioApi);
     }
 
-    public TranscriptionResponseDto transcribeAudio(MultipartFile file) throws IOException{
+    public TranscriptionResponseDto transcribeAudio(MultipartFile file) throws IOException {
         log.info("Transcribing audio file: {}", file.getOriginalFilename());
-        File tempFile = File.createTempFile("audio", "mp3");
+        File tempFile = File.createTempFile("audio", ".mp3");
         file.transferTo(tempFile);
 
-        OpenAiAudioTranscriptionOptions transcriptionOptions =
-                OpenAiAudioTranscriptionOptions.builder()
-                    .responseFormat(OpenAiAudioApi.TranscriptResponseFormat.TEXT)
-                        .language("pt")
-                        .temperature(0f) // nada criativo
-                        .build();
+        OpenAiAudioTranscriptionOptions transcriptionOptions = OpenAiAudioTranscriptionOptions.builder()
+                .model("whisper-large-v3") // Groq's free Whisper model
+                .responseFormat(OpenAiAudioApi.TranscriptResponseFormat.TEXT)
+                .language("pt")
+                .temperature(0f)
+                .build();
+
         FileSystemResource audioFile = new FileSystemResource(tempFile);
-
         AudioTranscriptionPrompt transcriptionRequest = new AudioTranscriptionPrompt(audioFile, transcriptionOptions);
-
         AudioTranscriptionResponse response = transcriptionModel.call(transcriptionRequest);
-        
+
         tempFile.delete();
-        
+
         return new TranscriptionResponseDto(response.getResult().getOutput(), file.getOriginalFilename());
     }
-
 }
-

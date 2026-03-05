@@ -1,4 +1,19 @@
+groq:
+  api-key: ${GROQ_API_KEY}
+
 spring:
   ai:
     openai:
-      api-key: ${OPEN_AI_API_KEY}
+      api-key: ${groq.api-key}
+      base-url: https://api.groq.com/openai
+      chat:
+        options:
+          model: llama-3.3-70b-versatile
+          temperature: 0.7
+      # Disable image auto-config — ImageService uses Pollinations.ai (free, no key needed)
+      image:
+        enabled: false
+
+# Exclude the OpenAI image auto-configuration to avoid startup failures
+spring.autoconfigure.exclude: >
+  org.springframework.ai.autoconfigure.openai.OpenAiImageAutoConfiguration

@@ -8,28 +8,26 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ChatService {
-    
+
     private final ChatModel chatModel;
 
     public ChatService(ChatModel chatModel) {
         this.chatModel = chatModel;
     }
 
-    public String getResponse(String prompt){
+    public String getResponse(String prompt) {
         return chatModel.call(prompt);
     }
 
-    public String getResponseWithOptions(String prompt){
+    public String getResponseWithOptions(String prompt) {
         ChatResponse response = chatModel.call(
-            new Prompt(
-                    prompt, 
-                    OpenAiChatOptions.builder()
-                        .model("gpt-4o")
-                        .temperature(0.4) // higher number more creative / crazy 
-                        .build()   
-        ));
-        
-        
+                new Prompt(
+                        prompt,
+                        OpenAiChatOptions.builder()
+                                .model("llama-3.3-70b-versatile")
+                                .temperature(0.4)
+                                .build()));
+
         return response.getResult().getOutput().getText();
     }
 }

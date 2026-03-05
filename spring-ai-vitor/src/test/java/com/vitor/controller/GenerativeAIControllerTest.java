@@ -1,6 +1,5 @@
 package com.vitor.controller;
 
-import com.vitor.dto.ChatResponseDto;
 import com.vitor.service.ChatService;
 import com.vitor.service.ImageService;
 import com.vitor.service.RecipeService;
@@ -8,7 +7,7 @@ import com.vitor.service.TranscriptionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,31 +22,30 @@ class GenerativeAIControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ChatService chatService;
 
-    @MockBean
+    @MockitoBean
     private RecipeService recipeService;
 
-    @MockBean
+    @MockitoBean
     private ImageService imageService;
 
-    @MockBean
+    @MockitoBean
     private TranscriptionService transcriptionService;
 
     @Test
     void askAi_ShouldReturnOk_WhenPromptIsValid() throws Exception {
         // Arrange
-        ChatResponseDto mockResponse = new ChatResponseDto("Mocked AI Response", "gpt-3.5-turbo");
-        when(chatService.getResponse(anyString())).thenReturn(mockResponse);
+        when(chatService.getResponseWithOptions(anyString())).thenReturn("Mocked AI Response");
 
         // Act & Assert
-        mockMvc.perform(get("/ai/ask-ai")
+        mockMvc.perform(get("/ai/ask-ai-options")
                 .param("prompt", "Hello World")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").value("Mocked AI Response"))
-                .andExpect(jsonPath("$.modelName").value("gpt-3.5-turbo"));
+                .andExpect(jsonPath("$.modelName").value("llama-3.3-70b-versatile"));
     }
 
     @Test
