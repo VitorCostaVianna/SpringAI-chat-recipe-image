@@ -7,18 +7,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer(){
+        return new WebMvcConfigurer() {
 
             @Override
-            public void addCorsMappings(CorsRegistry registry){
+            public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:8080/" , "http://localhost:3000","http://localhost:5173")
-                    .allowedMethods("GET", "POST" , "DELETE" , "PUT", "OPTIONS") // options for react or aangular 
-                    .allowedHeaders("*")
-                    .allowCredentials(true);
+                        .allowedOriginPatterns(
+                                "http://localhost:8080",
+                                "http://localhost:3000",
+                                "http://localhost:5173",
+                                "https://*.vercel.app",
+                                "https://springai-chat-recipe-image-production.up.railway.app")
+                        .allowedMethods("GET", "POST", "DELETE", "PUT", "OPTIONS") // options for react or aangular
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }
