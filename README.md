@@ -1,199 +1,171 @@
-# 🤖 AI Studio — Chat, Recipe & Image Generator
+# 🤖 AI Studio
 
-A full-stack AI-powered web application built with **Spring Boot + Spring AI** on the backend and **React + Vite** on the frontend. The project demonstrates real-world integration of large language models (LLMs) via a production-ready REST API.
+**A production-ready, full-stack AI application** demonstrating real-world integration of Large Language Models with a modern backend and frontend — designed as a portfolio-grade project showcasing senior-level engineering practices.
 
 ---
 
-## 🔄 Migration: OpenAI → Llama 3.3 via Groq
+## 🌐 Live Demo
 
-This project was originally built using the **OpenAI API** (GPT models). It was later migrated to use **Meta's Llama 3.3 70B** model served via **Groq's inference API**, which is:
+| | Link |
+|---|---|
+| 🖥️ **Frontend** | [ai-studio-alpha-beige.vercel.app](https://ai-studio-alpha-beige.vercel.app/) |
+| ⚙️ **Backend API** | [springai-chat-recipe-image-production.up.railway.app](https://springai-chat-recipe-image-production.up.railway.app) |
 
-- ✅ **Free** for personal and portfolio use
-- ✅ **OpenAI-compatible** — minimal code changes required thanks to Spring AI's abstraction layer
-- ✅ **Faster** — Groq's LPU inference hardware delivers extremely low latency
+---
 
-The audio transcription feature uses **Groq's Whisper API** (also OpenAI-compatible), replacing the original OpenAI Whisper integration.
+## 💡 Why This Project Stands Out
+
+This is not a tutorial project. It reflects real engineering decisions:
+
+- **LLM Provider Migration** — The project was originally built with OpenAI's API and later migrated to **Llama 3.3 70B via Groq**, without breaking any existing functionality. This demonstrates the value of Spring AI's **provider-agnostic abstraction layer** — the entire migration required only config changes, not code rewrites.
+- **Production Deployment** — Backend on **Railway** (Spring Boot JAR), Frontend on **Vercel** (Vite/React), with CORS properly configured for cross-origin communication.
+- **API Security** — API keys are never hardcoded. Secrets are injected via environment variables at runtime, following the [12-factor app](https://12factor.net/) methodology.
+- **Clean Architecture** — Layered backend with Controller → Service → DTO pattern, global exception handling, and structured logging.
 
 ---
 
 ## ✨ Features
 
-| Feature | Description |
+| Feature | Model / Provider |
 |---|---|
-| 💬 **AI Chat** | Real-time Q&A powered by Llama 3.3-70B via Groq |
-| 🍽️ **Recipe Generator** | Creates personalized recipes from ingredients, cuisine type, and dietary restrictions |
-| 🖼️ **Image Generator** | Generates AI images from text prompts via Pollinations.ai (free, no API key needed) |
-| 🎤 **Audio Transcription** | Converts voice recordings to text using Groq's Whisper model |
+| 💬 **AI Chat** | Llama 3.3 70B via Groq |
+| 🍽️ **Recipe Generator** | Llama 3.3 70B via Groq + Prompt Templates |
+| 🖼️ **Image Generator** | Pollinations.ai (free, no key required) |
+| 🎤 **Audio Transcription** | Whisper Large V3 via Groq |
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Backend**
-- Java 21 + Spring Boot 3.4
-- Spring AI 1.0 (OpenAI-compatible adapter)
-- Groq Cloud (Llama 3.3 70B + Whisper)
-- Maven
+### Backend
+- **Java 21** + **Spring Boot 3.4**
+- **Spring AI 1.0** — OpenAI-compatible abstraction layer
+- **Groq Cloud** — Ultra-fast LPU inference (Llama 3.3 + Whisper)
+- Global Exception Handling with `@RestControllerAdvice`
+- DTOs with **Java Records**
+- Maven, deployed on **Railway**
 
-**Frontend**
-- React 18 + Vite
-- TypeScript
-- Axios
-- Framer Motion
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Java 21+
-- Node.js 18+
-- Maven 3.8+
-- A free [Groq API key](https://console.groq.com)
-
-### Backend Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/VitorCostaVianna/SpringAI-chat-recipe-image.git
-cd SpringAI-chat-recipe-image/spring-ai-vitor
-```
-
-2. Set your Groq API key as an environment variable:
-```bash
-# Windows PowerShell
-$env:GROQ_API_KEY = "your-groq-api-key-here"
-
-# macOS/Linux
-export GROQ_API_KEY="your-groq-api-key-here"
-```
-
-3. Run the backend:
-```bash
-mvn spring-boot:run
-```
-
-The API will be available at `http://localhost:8080`.
-
-### Frontend Setup
-
-```bash
-cd frontend/api-client
-npm install
-npm run dev
-```
-
-The frontend will be available at `http://localhost:5173`.
+### Frontend
+- **React 18** + **TypeScript** + **Vite**
+- **Tailwind CSS** + **Framer Motion** animations
+- **Axios** for HTTP client
+- **React Router** for SPA navigation
+- Deployed on **Vercel**
 
 ---
 
-## 🔑 Environment Variables
+## 🔄 Key Engineering Decision: OpenAI → Llama 3.3 Migration
 
-| Variable | Description | Required |
-|---|---|---|
-| `GROQ_API_KEY` | Your Groq Cloud API key — get one free at [console.groq.com](https://console.groq.com) | ✅ Yes |
+Originally built using OpenAI's GPT models, the project was migrated to **Meta's Llama 3.3 70B** served via **Groq's inference API**.
 
-> ⚠️ **Never commit your API key.** The `application.yml` uses `${GROQ_API_KEY}` — always set it via environment variable or a local `.env` file (already in `.gitignore`).
+**Why Groq?**
+- ✅ Free tier with generous rate limits
+- ✅ 10x faster inference than standard OpenAI (Groq's custom LPU hardware)
+- ✅ Fully OpenAI-compatible — Spring AI needed zero code changes
+
+**What changed in the migration?**
+```yaml
+# Before
+spring.ai.openai.base-url: https://api.openai.com
+spring.ai.openai.chat.options.model: gpt-4o
+
+# After
+spring.ai.openai.base-url: https://api.groq.com/openai
+spring.ai.openai.chat.options.model: llama-3.3-70b-versatile
+```
+
+That's it. Spring AI's abstraction made the migration seamless.
 
 ---
 
 ## 📡 API Reference
 
-Base URL: `http://localhost:8080/ai`
+Base URL: `https://springai-chat-recipe-image-production.up.railway.app/ai`
 
-#### 💬 Chat — Simple
-```http
-GET /ai/ask-ai?prompt={prompt}
-```
-| Parameter | Type | Description |
+| Endpoint | Method | Description |
 |---|---|---|
-| `prompt` | `string` | **Required**. Your question or message |
+| `/ask-ai?prompt=` | GET | Simple AI chat response |
+| `/ask-ai-options?prompt=` | GET | Chat with model metadata in response |
+| `/recipe-creator` | GET | Generate recipe from ingredients |
+| `/generate-image?prompt=` | GET | Generate AI image from text |
+| `/transcribe` | POST | Audio file → text transcription |
 
-#### 💬 Chat — With Options (returns model metadata)
-```http
-GET /ai/ask-ai-options?prompt={prompt}
-```
-
-#### 🍽️ Recipe Generator
-```http
-GET /ai/recipe-creator
-```
-| Parameter | Type | Description |
+#### Recipe Creator Parameters
+| Param | Default | Description |
 |---|---|---|
-| `ingredients` | `string` | **Required**. Comma-separated list (e.g. `chicken,garlic,lemon`) |
-| `cuisine` | `string` | Cuisine type (default: `any`) |
-| `dietaryRestrictions` | `string` | E.g. `vegan`, `gluten-free` (default: `none`) |
+| `ingredients` | required | Comma-separated list |
+| `cuisine` | `any` | Cuisine type |
+| `dietaryRestrictions` | `none` | e.g. `vegan`, `gluten-free` |
 
-#### 🖼️ Image Generator
-```http
-GET /ai/generate-image
-```
-| Parameter | Type | Description |
-|---|---|---|
-| `prompt` | `string` | **Required**. Text description of the image |
-| `quality` | `string` | Image quality (default: `hd`) |
-| `n` | `integer` | Number of images (default: `1`) |
-| `height` | `integer` | Height in pixels (default: `1024`) |
-| `width` | `integer` | Width in pixels (default: `1024`) |
+---
 
-#### 🎤 Audio Transcription
-```http
-POST /ai/transcribe
-Content-Type: multipart/form-data
+## 🚀 Running Locally
+
+### Prerequisites
+- Java 21+, Node.js 18+, Maven 3.8+
+- Free [Groq API key](https://console.groq.com)
+
+### Backend
+```bash
+cd spring-ai-vitor/spring-ai-vitor
+
+# Set your API key
+export GROQ_API_KEY="your-key-here"       # macOS/Linux
+$env:GROQ_API_KEY = "your-key-here"       # Windows PowerShell
+
+mvn spring-boot:run
 ```
-| Parameter | Type | Description |
-|---|---|---|
-| `file` | `file` | **Required**. Audio file (`.mp3`, `.wav`, etc.) |
+
+### Frontend
+```bash
+cd api-client
+npm install
+npm run dev
+```
 
 ---
 
 ## 🏗️ Project Structure
 
 ```
-ProjetoOpenAi/
 ├── spring-ai-vitor/          # Backend (Spring Boot)
-│   └── spring-ai-vitor/
-│       └── src/main/
-│           ├── java/com/vitor/
-│           │   ├── controller/   # REST endpoints
-│           │   ├── service/      # Business logic + AI calls
-│           │   ├── dto/          # Data Transfer Objects (Java Records)
-│           │   ├── exception/    # Global exception handler
-│           │   └── config/       # CORS configuration
-│           └── resources/
-│               └── application.yml
-└── frontend/
-    └── api-client/           # Frontend (React + Vite)
-        └── src/
-            ├── pages/        # Chat, Recipe, Image, Transcription pages
-            ├── components/   # Sidebar, Layout
-            └── services/     # Axios API client
+│   └── src/main/java/com/vitor/
+│       ├── controller/       # REST endpoints
+│       ├── service/          # Business logic + AI integration
+│       ├── dto/              # Records (immutable DTOs)
+│       ├── config/           # CORS configuration
+│       └── exception/        # Global exception handler
+│
+└── api-client/               # Frontend (React + Vite)
+    └── src/
+        ├── pages/            # Chat, Recipe, Image, Transcription
+        ├── components/       # Layout, Sidebar
+        └── services/         # Axios API client
 ```
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] AI Chat interface
-- [x] Recipe generator with prompt templates
+- [x] AI Chat with Llama 3.3
+- [x] Recipe generator with system prompt templates
 - [x] Image generation (Pollinations.ai)
 - [x] Audio transcription (Groq Whisper)
-- [x] Migration from OpenAI to Llama 3.3 via Groq
-- [ ] Multi-turn chat with conversation history
-- [ ] Docker Compose setup for one-command deployment
-- [ ] User authentication (Spring Security + JWT)
+- [x] Migration from OpenAI → Llama 3.3 via Groq
+- [x] Production deployment (Railway + Vercel)
 - [ ] Streaming responses (Server-Sent Events)
+- [ ] Conversation history / multi-turn chat
+- [ ] Docker Compose for one-command local setup
+- [ ] CI/CD pipeline with GitHub Actions
 
 ---
 
 ## 🙏 Acknowledgements
 
-- **[Groq](https://groq.com)** — Ultra-fast LPU inference for Llama 3.3 and Whisper
-- **[Meta AI](https://ai.meta.com)** — For the open-source Llama 3.3 model
-- **[Spring AI](https://spring.io/projects/spring-ai)** — For the seamless AI integration layer
-- **[Spring Boot](https://spring.io/projects/spring-boot)** — Robust, production-ready backend framework
-- **[React](https://react.dev)** — Interactive and responsive frontend
-- **[Pollinations.ai](https://pollinations.ai)** — Free, open-source image generation API
+- **[Groq](https://groq.com)** — Blazing fast LPU inference
+- **[Meta AI](https://ai.meta.com)** — Open-source Llama 3.3 model
+- **[Spring AI](https://spring.io/projects/spring-ai)** — Provider-agnostic AI integration
+- **[Pollinations.ai](https://pollinations.ai)** — Free, open image generation
 
 ---
 
